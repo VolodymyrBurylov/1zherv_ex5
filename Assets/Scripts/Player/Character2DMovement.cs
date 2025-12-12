@@ -213,20 +213,39 @@ public class Character2DMovement : MonoBehaviour
 	     *   * Rotating a local rotation by an axis: localRotation *= Quaternion.Euler(...)
 	     */
 	    
-	    var animator = mSelector.charAnimator;
-	    if (animator != null)
-	    {
-			var currentVerticalSpeed = mController.velocity.y;
-			var currentHorizontalSpeed = new Vector3(mController.velocity.x, 0.0f, mController.velocity.z).magnitude;
-			
-			// Property values: 
-			var speed = currentHorizontalSpeed;
-			var moveSpeed = Math.Abs(mTargetHorSpeed / MoveSpeedAnimation);
-			var crouch = mInput.crouch;
-			var grounded = mController.isGrounded;
-			var jump = mInput.jump;
-			var falling = !mController.isGrounded && mFallTimeoutDelta <= 0.0f;
+	    if (mInput.move.x > 0)
+        {
+            transform.localRotation = Quaternion.Euler(0, 0, 0);
+            mHeadingRight = true;
+        }
+        
+        if (mInput.move.x < 0)
+        {
+            transform.localRotation = Quaternion.Euler(0, 180, 0);
+            mHeadingRight = false;
+        }
 
+        var animator = mSelector.charAnimator;
+        if (animator != null)
+        {
+            var currentVerticalSpeed = mController.velocity.y;
+            var currentHorizontalSpeed = new Vector3(mController.velocity.x, 0.0f, mController.velocity.z).magnitude;
+            
+            var speed = currentHorizontalSpeed;
+            var moveSpeed = Math.Abs(mTargetHorSpeed / MoveSpeedAnimation);
+            var crouch = mInput.crouch;
+            var grounded = mController.isGrounded;
+            var jump = mInput.jump;
+            var falling = !mController.isGrounded && mFallTimeoutDelta <= 0.0f;
+
+            animator.SetFloat("Speed", speed);
+            animator.SetFloat("MoveSpeed", moveSpeed);
+            animator.SetBool("Jump", jump);
+            animator.SetBool("Grounded", grounded);
+            animator.SetBool("Fall", falling);
+            animator.SetBool("Crouch", crouch);
+        }
+    
 			/*
 			 * Task #1a: Passing properties to the Animator
 			 * 
@@ -265,6 +284,6 @@ public class Character2DMovement : MonoBehaviour
 			 *   * Current Animator instance: *animator*
 			 *   * Animator methods: *SetFloat* and *SetBool*
 			 */
-	    }
+	    
     }
 }
